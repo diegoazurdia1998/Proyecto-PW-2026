@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './landing/landing.css';
 
 export default function ContactForm() {
     // 1. Manejamos el estado de los campos del formulario
@@ -56,63 +57,78 @@ export default function ContactForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px', gap: '10px' }}>
-            <h2>Contáctanos</h2>
+        <div className="contact-wrapper">
+            <div className="contact-header">
 
-            {/* Input de Nombre */}
-            <div>
-                <label>Nombre:</label>
-                <input
-                    type="text"
-                    name="nombre"
-                    value={formData.nombre}
-                    onChange={handleChange}
-                    required
-                    minLength="3"
-                />
+                {/* Aquí está el placeholder de tu logo */}
+                <div className="logo-placeholder">
+                    {/* Cuando tengas el logo, borra el texto y descomenta la línea de la imagen */}
+                    <span>[ Logo AeroPaq ]</span>
+                    {/* <img src="/ruta-a-tu-logo.png" alt="Logo AeroPaq" /> */}
+                </div>
+
+                <h2>Contáctanos</h2>
+                <p>Estamos aquí para ayudarte. Envíanos un mensaje y te responderemos pronto.</p>
             </div>
 
-            {/* Input de Correo con validación de tipo email */}
-            <div>
-                <label>Correo Electrónico:</label>
-                <input
-                    type="email"
-                    name="correo"
-                    value={formData.correo}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
+            <form className="contact-form" onSubmit={handleSubmit}>
+                <div className="form-row">
+                    <div className="form-group">
+                        <label>Nombre Completo:</label>
+                        <input
+                            type="text"
+                            name="nombre"
+                            value={formData.nombre}
+                            onChange={handleChange}
+                            required
+                            minLength="3"
+                            placeholder="Ej. Juan Pérez"
+                        />
+                    </div>
 
-            {/* Input de Teléfono con patrón de solo números */}
-            <div>
-                <label>Teléfono:</label>
-                <input
-                    type="tel"
-                    name="telefono"
-                    value={formData.telefono}
-                    onChange={handleChange}
-                    required
-                    pattern="[0-9]+"
-                    title="Por favor ingresa solo números"
-                />
-            </div>
+                    <div className="form-group">
+                        <label>Correo Electrónico:</label>
+                        <input
+                            type="email"
+                            name="correo"
+                            value={formData.correo}
+                            onChange={handleChange}
+                            required
+                            placeholder="ejemplo@correo.com"
+                        />
+                    </div>
+                </div>
 
-            {/* Textarea para el Mensaje */}
-            <div>
-                <label>Mensaje:</label>
-                <textarea
-                    name="mensaje"
-                    value={formData.mensaje}
-                    onChange={handleChange}
-                    required
-                    rows="4"
-                />
-            </div>
+                <div className="form-group">
+                    <label>Teléfono:</label>
+                    <input
+                        type="tel"
+                        name="telefono"
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        required
+                        pattern="[0-9]+"
+                        title="Por favor ingresa solo números"
+                        placeholder="Ej. 12345678"
+                    />
+                </div>
 
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
-            </button>
-        </form>
+                <div className="form-group">
+                    <label>Mensaje:</label>
+                    <textarea
+                        name="mensaje"
+                        value={formData.mensaje}
+                        onChange={handleChange}
+                        required
+                        rows="4"
+                        placeholder="¿En qué podemos ayudarte?"
+                    />
+                </div>
+
+                <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                    {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
+                </button>
+            </form>
+        </div>
     );
 }

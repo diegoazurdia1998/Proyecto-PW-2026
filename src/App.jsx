@@ -1,5 +1,4 @@
-//import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { HashRouter, Routes, Route } from "react-router-dom"; // Cambia BrowserRouter por HashRouter
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -14,7 +13,7 @@ import Cotizador from "./pages/Cotizador";
 
 export default function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
         <Navbar />
         <main style={{ flex: 1 }}>
@@ -31,6 +30,6 @@ export default function App() {
         </main>
         <Footer />
       </div>
-    </HashRouter>
+    </BrowserRouter>
   );
 }

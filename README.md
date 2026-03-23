@@ -83,7 +83,7 @@ Para el diseño visual y la responsividad de la interfaz, se adoptó un enfoque 
 * **Desarrollo Ágil y Consistencia:** Tailwind permitió un prototipado rápido y la construcción de la estructura principal (layouts, flexbox/grid, espaciados y tipografía) mediante clases utilitarias directamente en los componentes de React, asegurando un diseño consistente en toda la plataforma.
 * **Control Granular y Abstracción:** Se reservó el uso de CSS puro para aquellos componentes con requerimientos visuales altamente específicos, animaciones complejas (keyframes) o casos donde el uso excesivo de clases utilitarias saturaría la lectura del código (HTML clutter). Esto garantiza un balance entre rapidez de desarrollo y un código fuente limpio y mantenible.
 
-* ### 7. Lógica y Arquitectura del Cotizador de Envíos
+### 7. Lógica y Arquitectura del Cotizador de Envíos
 Para garantizar el funcionamiento preciso y eficiente del sistema de cotización, se tomaron las siguientes decisiones arquitectónicas y de validación:
 
 * **Desacoplamiento de la Lógica (Separation of Concerns):** Se extrajo todo el algoritmo matemático de tarifas a un módulo independiente (`shippingMath.js`). Esto aísla las reglas de negocio de la interfaz gráfica construida en React, permitiendo actualizar las fórmulas de cobro sin riesgo de afectar el renderizado de los componentes visuales.

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+
 const services = [
   {
     icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2ECC71" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
@@ -25,15 +26,17 @@ const services = [
 ];
 
 const stats = [
-  { value: "20+", label: "Años de experiencia" },
+  { value: "20+",  label: "Años de experiencia" },
   { value: "200+", label: "Países con cobertura" },
   { value: "50k+", label: "Envíos mensuales" },
-  { value: "99%", label: "Entregas exitosas" },
+  { value: "99%",  label: "Entregas exitosas" },
 ];
 
 export default function Home() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isTablet, setIsTablet] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile]   = useState(window.innerWidth < 768);
+  const [isTablet, setIsTablet]   = useState(window.innerWidth < 1024);
+  const [trackingCode, setTrackingCode]     = useState("");
+  const [trackingResult, setTrackingResult] = useState(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,6 +47,16 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleTrack = () => {
+    if (!trackingCode.trim()) return;
+    setTrackingResult({
+      codigo:    trackingCode.toUpperCase(),
+      estado:    "En tránsito",
+      ubicacion: "Ciudad de Guatemala, Zona 4",
+      estimado:  "Mañana entre 9:00 - 13:00",
+    });
+  };
+
   return (
     <div style={{ fontFamily: "'Plus Jakarta Sans', 'Segoe UI', sans-serif", color: "#2D2D2D", backgroundColor: "#F7F8FA" }}>
 
@@ -51,18 +64,13 @@ export default function Home() {
       <section style={{
         background: "linear-gradient(135deg, #1A3C6E 0%, #1e4d8c 60%, #1a5c6e 100%)",
         padding: isMobile ? "48px 20px 56px" : "80px 24px",
-        display: "flex",
-        alignItems: "center",
+        display: "flex", alignItems: "center",
         minHeight: isMobile ? "auto" : "520px",
       }}>
         <div style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          width: "100%",
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          alignItems: "center",
-          gap: isMobile ? "32px" : "48px",
+          maxWidth: "1200px", margin: "0 auto", width: "100%",
+          display: "flex", flexDirection: isMobile ? "column" : "row",
+          alignItems: "center", gap: isMobile ? "32px" : "48px",
         }}>
           {/* Text */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -97,21 +105,17 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Image placeholder — hidden on mobile */}
+          {/* Hero image */}
           {!isMobile && (
-            <div style={{
-              width: "320px", height: "260px", flexShrink: 0,
-              backgroundColor: "rgba(255,255,255,0.05)", borderRadius: "16px",
-              border: "1px dashed rgba(255,255,255,0.15)",
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            }}>
-              <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
-              </svg>
-              <p style={{ color: "rgba(255,255,255,0.2)", fontSize: "12px", marginTop: "10px" }}>Imagen ilustrativa</p>
-            </div>
+            <img
+  src={import.meta.env.BASE_URL + "hero.svg"}
+  alt="AeroPaq — envíos aéreos y terrestres"
+  style={{
+    width: "340px", height: "260px",
+    objectFit: "cover", borderRadius: "16px",
+    flexShrink: 0,
+  }}
+/>
           )}
         </div>
       </section>
@@ -181,27 +185,74 @@ export default function Home() {
             backgroundColor: "#ffffff", borderRadius: "16px",
             padding: isMobile ? "28px 20px" : "40px 48px",
             border: "1px solid #EEF2F8",
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            alignItems: isMobile ? "flex-start" : "center",
-            justifyContent: "space-between",
-            gap: "24px",
           }}>
-            <div>
-              <h2 style={{ fontSize: isMobile ? "20px" : "24px", fontWeight: "800", color: "#1A3C6E", margin: "0 0 8px" }}>Rastrea tu envío</h2>
-              <p style={{ fontSize: "14px", color: "#718096", margin: 0 }}>Ingresa tu número de seguimiento para conocer el estado de tu paquete.</p>
+            <div style={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              alignItems: isMobile ? "flex-start" : "center",
+              justifyContent: "space-between",
+              gap: "24px",
+              marginBottom: trackingResult ? "20px" : "0",
+            }}>
+              <div>
+                <h2 style={{ fontSize: isMobile ? "20px" : "24px", fontWeight: "800", color: "#1A3C6E", margin: "0 0 8px" }}>Rastrea tu envío</h2>
+                <p style={{ fontSize: "14px", color: "#718096", margin: 0 }}>Ingresa tu número de seguimiento para conocer el estado de tu paquete.</p>
+              </div>
+              <div style={{ display: "flex", gap: "10px", width: isMobile ? "100%" : "auto", flex: isMobile ? "none" : 1, maxWidth: "420px" }}>
+                <input
+                  type="text"
+                  placeholder="Ej: APQ123456789"
+                  value={trackingCode}
+                  onChange={(e) => setTrackingCode(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleTrack()}
+                  style={{
+                    flex: 1, padding: "12px 16px", borderRadius: "8px",
+                    border: "1.5px solid #E2E8F0", fontSize: "14px",
+                    outline: "none", fontFamily: "inherit",
+                  }}
+                />
+                <button
+                  onClick={handleTrack}
+                  style={{
+                    backgroundColor: "#1A3C6E", color: "#ffffff", fontWeight: "600",
+                    fontSize: "14px", padding: "12px 20px", borderRadius: "8px",
+                    border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+                  }}
+                >
+                  Rastrear
+                </button>
+              </div>
             </div>
-            <div style={{ display: "flex", gap: "10px", width: isMobile ? "100%" : "auto", flex: isMobile ? "none" : 1, maxWidth: "420px" }}>
-              <input type="text" placeholder="Ej: APQ123456789" style={{
-                flex: 1, padding: "12px 16px", borderRadius: "8px",
-                border: "1.5px solid #E2E8F0", fontSize: "14px", outline: "none", fontFamily: "inherit",
-              }}/>
-              <button style={{
-                backgroundColor: "#1A3C6E", color: "#ffffff", fontWeight: "600",
-                fontSize: "14px", padding: "12px 20px", borderRadius: "8px",
-                border: "none", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
-              }}>Rastrear</button>
-            </div>
+
+            {/* Resultado de rastreo */}
+            {trackingResult && (
+              <div style={{
+                backgroundColor: "#F0FFF7", borderRadius: "10px",
+                border: "1px solid #C6F6D5", padding: "20px 24px",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+                  <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#2ECC71" }} />
+                  <span style={{ fontSize: "14px", fontWeight: "700", color: "#1A3C6E" }}>Paquete encontrado</span>
+                </div>
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+                  gap: "16px",
+                }}>
+                  {[
+                    { label: "Código",           value: trackingResult.codigo,    color: "#1A3C6E" },
+                    { label: "Estado",            value: trackingResult.estado,    color: "#2ECC71" },
+                    { label: "Ubicación actual",  value: trackingResult.ubicacion, color: "#2D2D2D" },
+                    { label: "Entrega estimada",  value: trackingResult.estimado,  color: "#2D2D2D" },
+                  ].map((item) => (
+                    <div key={item.label}>
+                      <p style={{ fontSize: "12px", color: "#718096", margin: "0 0 4px", fontWeight: "500" }}>{item.label}</p>
+                      <p style={{ fontSize: "14px", fontWeight: "700", color: item.color, margin: 0 }}>{item.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

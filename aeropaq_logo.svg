@@ -1,0 +1,42 @@
+<svg width="100%" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- Hexágono (forma del ícono) -->
+  <g transform="translate(120, 130)" style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <!-- Hexágono fondo azul -->
+    <polygon points="0,-72 62,-36 62,36 0,72 -62,36 -62,-36" fill="#1A3C6E" stroke="none" style="fill:rgb(26, 60, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+    <!-- Avión de carga estilizado -->
+    <!-- Fuselaje principal -->
+    <rect x="-38" y="-8" width="64" height="16" rx="8" fill="#2ECC71" style="fill:rgb(46, 204, 113);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <!-- Nariz del avión -->
+    <polygon points="26,-8 48,0 26,8" fill="#2ECC71" style="fill:rgb(46, 204, 113);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <!-- Cola -->
+    <polygon points="-38,-8 -52,-24 -44,-8" fill="#2ECC71" style="fill:rgb(46, 204, 113);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <polygon points="-38,8 -52,24 -44,8" fill="#2ECC71" style="fill:rgb(46, 204, 113);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <!-- Ala superior -->
+    <polygon points="-12,-8 -30,-36 8,-8" fill="#ffffff" opacity="0.9" style="fill:rgb(255, 255, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.9;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <!-- Ala inferior -->
+    <polygon points="-12,8 -30,36 8,8" fill="#ffffff" opacity="0.7" style="fill:rgb(255, 255, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.7;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <!-- Ventanilla / detalle -->
+    <circle cx="10" cy="0" r="4" fill="#1A3C6E" style="fill:rgb(26, 60, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <circle cx="-4" cy="0" r="4" fill="#1A3C6E" opacity="0.6" style="fill:rgb(26, 60, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  </g>
+
+  <!-- Nombre AeroPaq -->
+  <text x="212" y="108" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="62" font-weight="800" fill="#1A3C6E" letter-spacing="-2" style="fill:rgb(26, 60, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:62px;font-weight:800;text-anchor:start;dominant-baseline:auto">Aero</text>
+  <text x="340" y="108" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="62" font-weight="800" fill="#2ECC71" letter-spacing="-2" style="fill:rgb(46, 204, 113);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Plus Jakarta Sans&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:62px;font-weight:800;text-anchor:start;dominant-baseline:auto">Paq</text>
+
+  <!-- Tagline -->
+  <text x="212" y="140" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="15" font-weight="500" fill="#1A3C6E" letter-spacing="3" opacity="0.7" style="fill:rgb(26, 60, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.7;font-family:&quot;Plus Jakarta Sans&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:15px;font-weight:500;text-anchor:start;dominant-baseline:auto">ENVÍOS CONFIABLES</text>
+
+  <!-- Línea decorativa bajo el tagline -->
+  <rect x="212" y="152" width="200" height="2" rx="1" fill="#2ECC71" opacity="0.5" style="fill:rgb(46, 204, 113);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.5;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Segunda línea opcional -->
+  <text x="212" y="180" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="13" fill="#1A3C6E" opacity="0.45" letter-spacing="1" style="fill:rgb(26, 60, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.45;font-family:&quot;Plus Jakarta Sans&quot;, &quot;Segoe UI&quot;, sans-serif;font-size:13px;font-weight:400;text-anchor:start;dominant-baseline:auto">Guatemala · Regional · Internacional</text>
+</svg>

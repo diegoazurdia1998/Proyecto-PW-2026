@@ -132,7 +132,7 @@ export default function Cotizador() {
                   </select>
                 </div>
                 <div>
-                  <label style={labelStyle}>Ciudad de Origen</label>
+                  <label style={labelStyle}>Lugar de Origen</label>
                   <input className="aero-input" type="text" placeholder="Ej. Guatemala" style={inputStyle} />
                 </div>
                 <div>
@@ -149,7 +149,7 @@ export default function Cotizador() {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Ciudad de Destino</label>
+                  <label style={labelStyle}>Lugar de Destino</label>
                   <input className="aero-input" type="text" placeholder="Ej. Quetzaltenango" style={inputStyle} />
                 </div>
                 <div>

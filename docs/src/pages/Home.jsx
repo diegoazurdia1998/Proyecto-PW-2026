@@ -108,14 +108,14 @@ export default function Home() {
           {/* Hero image */}
           {!isMobile && (
             <img
-  src={import.meta.env.BASE_URL + "hero.svg"}
-  alt="AeroPaq — envíos aéreos y terrestres"
-  style={{
-    width: "340px", height: "260px",
-    objectFit: "cover", borderRadius: "16px",
-    flexShrink: 0,
-  }}
-/>
+            src={import.meta.env.BASE_URL + "hero.svg"}
+            alt="AeroPaq — envíos aéreos y terrestres"
+            style={{
+              width: "340px", height: "260px",
+              objectFit: "cover", borderRadius: "16px",
+              flexShrink: 0,
+            }}
+          />
           )}
         </div>
       </section>

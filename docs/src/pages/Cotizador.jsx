@@ -2,18 +2,25 @@ import { useState, useEffect } from "react";
 import { calcularCotizacion } from "../utils/shippingMath";
 
 const packageTypes = [
-  { id: "sobre",        label: "Sobre",        maxVol: 500   },
-  { id: "caja-pequena", label: "Caja Pequeña", maxVol: 5000  },
-  { id: "caja-mediana", label: "Caja Mediana", maxVol: 20000 },
+  { id: "sobre",        label: "Sobre",        maxVol: 500      },
+  { id: "caja-pequena", label: "Caja Pequeña", maxVol: 5000     },
+  { id: "caja-mediana", label: "Caja Mediana", maxVol: 20000    },
   { id: "caja-grande",  label: "Caja Grande",  maxVol: Infinity },
 ];
 
+const planes = [
+  { id: "estandar", label: "Estándar", multiplier: 1   },
+  { id: "expres",   label: "Exprés",   multiplier: 1.5 },
+  { id: "premium",  label: "Premium",  multiplier: 2.5 },
+];
+
 export default function Cotizador() {
-  const [isMobile, setIsMobile]           = useState(window.innerWidth < 768);
-  const [selectedPackage, setSelectedPackage] = useState("caja-pequena"); // default
-  const [resultado, setResultado]         = useState(null);
-  const [pesoError, setPesoError]         = useState(false); // solo marca rojo al intentar cotizar
-  const [formData, setFormData]           = useState({
+  const [isMobile, setIsMobile]               = useState(window.innerWidth < 768);
+  const [selectedPackage, setSelectedPackage] = useState("caja-pequena");
+  const [resultado, setResultado]             = useState(null);
+  const [pesoError, setPesoError]             = useState(false);
+  const [planSeleccionado, setPlanSeleccionado] = useState(null);
+  const [formData, setFormData] = useState({
     origenDestino: "local",
     peso: "",
     largo: "", ancho: "", alto: "",
@@ -21,7 +28,6 @@ export default function Cotizador() {
     recoleccion: false,
     seguro: false,
     entregaUrgente: false,
-    nombre: "", email: "", telefono: "",
   });
 
   useEffect(() => {
@@ -30,7 +36,6 @@ export default function Cotizador() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Auto-seleccionar tipo de paquete según volumen de dimensiones
   useEffect(() => {
     const { largo, ancho, alto } = formData;
     if (largo && ancho && alto) {
@@ -55,7 +60,7 @@ export default function Cotizador() {
     const datos = {
       origenDestino: formData.origenDestino,
       peso: Number(formData.peso),
-      nivelServicio: "estandar", // base siempre estándar; las tarjetas muestran los 3 niveles
+      nivelServicio: "estandar",
       recoleccion: formData.recoleccion,
       seguro: formData.seguro,
       dimensiones: (formData.largo && formData.ancho && formData.alto)
@@ -64,6 +69,16 @@ export default function Cotizador() {
     };
     const cotizacion = calcularCotizacion(datos);
     setResultado(cotizacion);
+    setPlanSeleccionado("estandar");
+
+    // Evento Google Analytics
+    if (typeof gtag !== "undefined") {
+      gtag("event", "cotizacion_calculada", {
+        event_category: "Cotizador",
+        event_label: "Calcular Costo",
+      });
+    }
+
     setTimeout(() => document.getElementById("resultados")?.scrollIntoView({ behavior: "smooth" }), 100);
   };
 
@@ -73,13 +88,15 @@ export default function Cotizador() {
     fontFamily: "inherit", boxSizing: "border-box", color: "#2D2D2D",
     backgroundColor: "#ffffff",
   };
-  const labelStyle    = { fontSize: "13px", fontWeight: "600", color: "#4A5568", marginBottom: "6px", display: "block" };
-  const sectionTitle  = { fontSize: "17px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 20px" };
+  const labelStyle   = { fontSize: "13px", fontWeight: "600", color: "#4A5568", marginBottom: "6px", display: "block" };
+  const sectionTitle = { fontSize: "17px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 20px" };
+
+  // Plan activo para el desglose
+  const planActivo = planes.find(p => p.id === planSeleccionado) || planes[0];
 
   return (
     <div style={{ backgroundColor: "#F7F8FA", fontFamily: "'Plus Jakarta Sans', 'Segoe UI', sans-serif" }}>
 
-      {/* Placeholders grises — no se puede hacer con inline styles */}
       <style>{`
         .aero-input::placeholder { color: #B0BAC9; font-style: italic; }
         .aero-input:focus { border-color: #1A3C6E !important; box-shadow: 0 0 0 3px rgba(26,60,110,0.08) !important; }
@@ -164,7 +181,7 @@ export default function Cotizador() {
                   ))}
                 </div>
 
-                {/* Peso — fila separada, rojo solo si intentó cotizar sin llenarlo */}
+                {/* Peso */}
                 <div style={{ borderTop: "1px solid #EEF2F8", paddingTop: "14px" }}>
                   <p style={{ fontSize: "12px", color: "#718096", margin: "0 0 10px" }}>
                     <span style={{ color: "#e53e3e", fontWeight: "700" }}>*</span> Campo obligatorio
@@ -193,7 +210,7 @@ export default function Cotizador() {
                   </div>
                 </div>
 
-                {/* Tipo de paquete — auto-seleccionado según dimensiones */}
+                {/* Tipo de paquete */}
                 <div>
                   <label style={labelStyle}>
                     Tipo de Paquete
@@ -207,7 +224,6 @@ export default function Cotizador() {
                         ? Number(formData.largo) * Number(formData.ancho) * Number(formData.alto)
                         : null;
                       const minVol = index > 0 ? packageTypes[index - 1].maxVol : 0;
-                      // Deshabilitar si el volumen no cae en el rango de este tipo
                       const disabled = vol !== null && (vol > t.maxVol || vol <= minVol);
                       return (
                         <button key={t.id} onClick={() => !disabled && setSelectedPackage(t.id)} style={{
@@ -226,16 +242,6 @@ export default function Cotizador() {
                     Sobre &lt; 500 cm³ · Caja Pequeña &lt; 5,000 · Caja Mediana &lt; 20,000 · Caja Grande en adelante
                   </p>
                 </div>
-
-                {/* Nivel de servicio */}
-                <div>
-                  <label style={labelStyle}>Nivel de Servicio</label>
-                  <select name="nivelServicio" value={formData.nivelServicio} onChange={handleChange} style={inputStyle}>
-                    <option value="estandar">Estándar</option>
-                    <option value="expres">Exprés</option>
-                  </select>
-                </div>
-
                 {/* Servicios adicionales */}
                 <div>
                   <label style={labelStyle}>Servicios Adicionales</label>
@@ -278,60 +284,99 @@ export default function Cotizador() {
             {/* Option cards */}
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
               {[
-                { label: "Envío Estándar", multiplier: 1,   days: "3-5 días hábiles",  features: ["Seguimiento incluido", "Seguro básico"], recommended: false },
-                { label: "Envío Exprés",   multiplier: 1.5, days: "24-48 horas",        features: ["Seguimiento en tiempo real", "Seguro completo", "Notificaciones SMS"], recommended: true },
-                { label: "Envío Premium",  multiplier: 2.5, days: "Garantizado 24h",    features: ["Prioridad máxima", "Seguro premium", "Soporte dedicado", "Embalaje especial"], recommended: false },
-              ].map((opt) => (
-                <div key={opt.label} style={{
-                  backgroundColor: "#ffffff", borderRadius: "14px", padding: "24px",
-                  border: opt.recommended ? "2px solid #2ECC71" : "1px solid #E2E8F0",
-                  position: "relative", boxShadow: opt.recommended ? "0 4px 20px rgba(46,204,113,0.15)" : "none",
-                }}>
-                  {opt.recommended && (
-                    <div style={{
-                      position: "absolute", top: "-12px", right: "16px",
-                      backgroundColor: "#2ECC71", color: "#ffffff",
-                      fontSize: "11px", fontWeight: "700", padding: "4px 12px", borderRadius: "50px",
-                    }}>Recomendado</div>
-                  )}
-                  <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 12px" }}>{opt.label}</h4>
-                  <div style={{ marginBottom: "16px" }}>
-                    <span style={{ fontSize: "32px", fontWeight: "800", color: "#2D2D2D" }}>
-                      Q{(resultado.total * opt.multiplier).toFixed(2)}
-                    </span>
+                { id: "estandar", label: "Envío Estándar", multiplier: 1,   days: "3-5 días hábiles", features: ["Seguimiento incluido", "Seguro básico"], recommended: false },
+                { id: "expres",   label: "Envío Exprés",   multiplier: 1.5, days: "24-48 horas",       features: ["Seguimiento en tiempo real", "Seguro completo", "Notificaciones SMS"], recommended: true },
+                { id: "premium",  label: "Envío Premium",  multiplier: 2.5, days: "Garantizado 24h",   features: ["Prioridad máxima", "Seguro premium", "Soporte dedicado", "Embalaje especial"], recommended: false },
+              ].map((opt) => {
+                const esSeleccionado = planSeleccionado === opt.id;
+                return (
+                  <div key={opt.id} style={{
+                    backgroundColor: "#ffffff", borderRadius: "14px", padding: "24px",
+                    border: esSeleccionado ? "2px solid #1A3C6E" : opt.recommended ? "2px solid #2ECC71" : "1px solid #E2E8F0",
+                    position: "relative",
+                    boxShadow: esSeleccionado ? "0 4px 20px rgba(26,60,110,0.15)" : opt.recommended ? "0 4px 20px rgba(46,204,113,0.15)" : "none",
+                    transition: "all 0.2s",
+                  }}>
+                    {opt.recommended && !esSeleccionado && (
+                      <div style={{
+                        position: "absolute", top: "-12px", right: "16px",
+                        backgroundColor: "#2ECC71", color: "#ffffff",
+                        fontSize: "11px", fontWeight: "700", padding: "4px 12px", borderRadius: "50px",
+                      }}>Recomendado</div>
+                    )}
+                    {esSeleccionado && (
+                      <div style={{
+                        position: "absolute", top: "-12px", right: "16px",
+                        backgroundColor: "#1A3C6E", color: "#ffffff",
+                        fontSize: "11px", fontWeight: "700", padding: "4px 12px", borderRadius: "50px",
+                      }}>✓ Seleccionado</div>
+                    )}
+                    <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 12px" }}>{opt.label}</h4>
+                    <div style={{ marginBottom: "16px" }}>
+                      <span style={{ fontSize: "32px", fontWeight: "800", color: "#2D2D2D" }}>
+                        Q{(resultado.total * opt.multiplier).toFixed(2)}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: "13px", color: "#718096", marginBottom: "14px" }}>⏱ {opt.days}</div>
+                    <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                      {opt.features.map((f) => (
+                        <li key={f} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#4A5568" }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ECC71" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                          </svg>
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      onClick={() => setPlanSeleccionado(opt.id)}
+                      style={{
+                        width: "100%", padding: "10px", borderRadius: "8px", fontSize: "14px", fontWeight: "600",
+                        cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+                        backgroundColor: esSeleccionado ? "#1A3C6E" : opt.recommended ? "#2ECC71" : "transparent",
+                        color: esSeleccionado || opt.recommended ? "#ffffff" : "#2ECC71",
+                        border: esSeleccionado ? "2px solid #1A3C6E" : "2px solid #2ECC71",
+                      }}
+                    >
+                      {esSeleccionado ? "✓ Seleccionado" : "Seleccionar"}
+                    </button>
                   </div>
-                  <div style={{ fontSize: "13px", color: "#718096", marginBottom: "14px" }}>⏱ {opt.days}</div>
-                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                    {opt.features.map((f) => (
-                      <li key={f} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#4A5568" }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ECC71" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <button style={{
-                    width: "100%", padding: "10px", borderRadius: "8px", fontSize: "14px", fontWeight: "600",
-                    cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
-                    backgroundColor: opt.recommended ? "#2ECC71" : "transparent",
-                    color: opt.recommended ? "#ffffff" : "#2ECC71",
-                    border: "2px solid #2ECC71",
-                  }}>Seleccionar</button>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            {/* Cost Breakdown */}
+            {/* Cost Breakdown — dinámico según plan seleccionado */}
             <div style={{ backgroundColor: "#ffffff", borderRadius: "14px", padding: "28px", border: "1px solid #E2E8F0" }}>
-              <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 20px" }}>Desglose de Costos (base Estándar)</h4>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
+                <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E", margin: 0 }}>
+                  Desglose de Costos — {planActivo.label}
+                </h4>
+                {/* Mini selector de plan */}
+                <div style={{ display: "flex", gap: "6px" }}>
+                  {planes.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => setPlanSeleccionado(p.id)}
+                      style={{
+                        padding: "5px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: "600",
+                        cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+                        backgroundColor: planSeleccionado === p.id ? "#1A3C6E" : "#F7F8FA",
+                        color: planSeleccionado === p.id ? "#ffffff" : "#718096",
+                        border: planSeleccionado === p.id ? "1.5px solid #1A3C6E" : "1.5px solid #E2E8F0",
+                      }}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  ["Costo base",              resultado.desglose.base],
-                  ["Costo por distancia",     resultado.desglose.distancia],
-                  ["Costo por peso / volumen",resultado.desglose.peso],
-                  ...(resultado.desglose.recargoServicio > 0 ? [["Recargo Exprés", resultado.desglose.recargoServicio]] : []),
-                  ...(resultado.desglose.extras > 0          ? [["Servicios extra", resultado.desglose.extras]]        : []),
+                  ["Costo base",               resultado.desglose.base      * planActivo.multiplier],
+                  ["Costo por distancia",       resultado.desglose.distancia * planActivo.multiplier],
+                  ["Costo por peso / volumen",  resultado.desglose.peso      * planActivo.multiplier],
+                  ...(resultado.desglose.extras > 0 ? [["Servicios extra", resultado.desglose.extras]] : []),
                 ].map(([label, val]) => (
                   <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
                     <span style={{ color: "#718096" }}>{label}</span>
@@ -339,8 +384,10 @@ export default function Cotizador() {
                   </div>
                 ))}
                 <div style={{ borderTop: "1px solid #EEF2F8", paddingTop: "12px", display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E" }}>Total Estándar</span>
-                  <span style={{ fontSize: "22px", fontWeight: "800", color: "#2ECC71" }}>Q{resultado.total.toFixed(2)}</span>
+                  <span style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E" }}>Total {planActivo.label}</span>
+                  <span style={{ fontSize: "22px", fontWeight: "800", color: "#2ECC71" }}>
+                    Q{(resultado.total * planActivo.multiplier).toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>

@@ -3,17 +3,15 @@ import './landing/landing.css';
 import AeroPaqLogo from "./AeroPaqLogo";
 
 export default function ContactForm() {
-    // 1. Manejamos el estado de los campos del formulario
     const [formData, setFormData] = useState({
         nombre: '',
         correo: '',
         telefono: '',
         mensaje: ''
     });
-    //Prteccion de SPAM
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // 2. Función para actualizar el estado cuando el usuario escribe
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -21,38 +19,51 @@ export default function ContactForm() {
         });
     };
 
-    // 3. Función para enviar los datos a Google Sheets
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Evita que la página se recargue
+        e.preventDefault();
 
-        // Aquí irían tus validaciones de nombre, correo, teléfono y mensaje antes de enviar
-
-        // Medida de seguridad extra: si ya está enviando, no hagas nada.
         if (isSubmitting) return;
 
-        // Bloqueamos el formulario
+        // Validar que el nombre no contenga números
+        if (/\d/.test(formData.nombre)) {
+            alert("El nombre no puede contener números.");
+            return;
+        }
+
+        // Validar que el nombre tenga al menos 2 palabras
+        if (formData.nombre.trim().split(/\s+/).length < 2) {
+            alert("Por favor ingresa tu nombre completo (nombre y apellido).");
+            return;
+        }
+
         setIsSubmitting(true);
 
         const URL_GOOGLE_SCRIPT = 'https://script.google.com/macros/s/AKfycby7oo0Orrw2tzhdfjbt76IphHMeDP9D7YAcTnVxqIzThp_LhABWE94Dc7UPX3jYNkk2Ew/exec';
 
         try {
-            const response = await fetch(URL_GOOGLE_SCRIPT, {
+            await fetch(URL_GOOGLE_SCRIPT, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
 
             alert('¡Mensaje enviado con éxito!');
+
+            // Evento Google Analytics — solo si el envío fue exitoso
+            if (typeof gtag !== "undefined") {
+                gtag("event", "contacto_enviado", {
+                    event_category: "Formulario",
+                    event_label: "Contacto",
+                });
+            }
+
             setFormData({ nombre: '', correo: '', telefono: '', mensaje: '' });
 
         } catch (error) {
             console.error('Error al enviar el mensaje:', error);
             alert('Hubo un error al enviar tu mensaje.');
         } finally {
-            // Pase lo que pase (éxito o error), volvemos a habilitar el botón al terminar
             setIsSubmitting(false);
         }
     };

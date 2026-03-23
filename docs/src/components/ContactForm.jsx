@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './landing/landing.css';
+import AeroPaqLogo from "./AeroPaqLogo";
 
 export default function ContactForm() {
     // 1. Manejamos el estado de los campos del formulario
@@ -60,11 +61,8 @@ export default function ContactForm() {
         <div className="contact-wrapper">
             <div className="contact-header">
 
-                {/* Aquí está el placeholder de tu logo */}
-                <div className="logo-placeholder">
-                    {/* Cuando tengas el logo, borra el texto y descomenta la línea de la imagen */}
-                    <span>[ Logo AeroPaq ]</span>
-                    {/* <img src="/ruta-a-tu-logo.png" alt="Logo AeroPaq" /> */}
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+                    <AeroPaqLogo variant="dark" size="md" />
                 </div>
 
                 <h2>Contáctanos</h2>

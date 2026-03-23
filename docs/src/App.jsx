@@ -10,6 +10,8 @@ import SobreNosotros from "./pages/SobreNosotros";
 import FAQ from "./pages/FAQ";
 import Contacto from "./pages/Contacto";
 import Cotizador from "./pages/Cotizador";
+import Terminos   from "./pages/Terminos";
+import Privacidad from "./pages/Privacidad";
 
 
 export default function App() {
@@ -27,6 +29,8 @@ export default function App() {
             <Route path="/faq" element={<FAQ />} />
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/cotizador" element={<Cotizador />} />
+            <Route path="/terminos"   element={<Terminos />} />
+            <Route path="/privacidad" element={<Privacidad />} />
           </Routes>
         </main>
         <Footer />

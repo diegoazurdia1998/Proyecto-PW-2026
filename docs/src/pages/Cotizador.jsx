@@ -2,17 +2,18 @@ import { useState, useEffect } from "react";
 import { calcularCotizacion } from "../utils/shippingMath";
 
 const packageTypes = [
-  { id: "sobre", label: "Sobre" },
-  { id: "caja-pequena", label: "Caja Pequeña" },
-  { id: "caja-mediana", label: "Caja Mediana" },
-  { id: "caja-grande", label: "Caja Grande" },
+  { id: "sobre",        label: "Sobre",        maxVol: 500   },
+  { id: "caja-pequena", label: "Caja Pequeña", maxVol: 5000  },
+  { id: "caja-mediana", label: "Caja Mediana", maxVol: 20000 },
+  { id: "caja-grande",  label: "Caja Grande",  maxVol: Infinity },
 ];
 
 export default function Cotizador() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [resultado, setResultado] = useState(null);
-  const [formData, setFormData] = useState({
+  const [isMobile, setIsMobile]           = useState(window.innerWidth < 768);
+  const [selectedPackage, setSelectedPackage] = useState("caja-pequena"); // default
+  const [resultado, setResultado]         = useState(null);
+  const [pesoError, setPesoError]         = useState(false); // solo marca rojo al intentar cotizar
+  const [formData, setFormData]           = useState({
     origenDestino: "local",
     peso: "",
     largo: "", ancho: "", alto: "",
@@ -29,17 +30,32 @@ export default function Cotizador() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Auto-seleccionar tipo de paquete según volumen de dimensiones
+  useEffect(() => {
+    const { largo, ancho, alto } = formData;
+    if (largo && ancho && alto) {
+      const vol = Number(largo) * Number(ancho) * Number(alto);
+      const match = packageTypes.find((t) => vol <= t.maxVol);
+      if (match) setSelectedPackage(match.id);
+    }
+  }, [formData.largo, formData.ancho, formData.alto]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
+    const newVal = type === "checkbox" ? checked : value;
+    if (name === "peso" && pesoError && value) setPesoError(false);
+    setFormData({ ...formData, [name]: newVal });
   };
 
   const handleCalcular = () => {
-    if (!formData.peso) return;
+    if (!formData.peso) {
+      setPesoError(true);
+      return;
+    }
     const datos = {
       origenDestino: formData.origenDestino,
       peso: Number(formData.peso),
-      nivelServicio: formData.nivelServicio,
+      nivelServicio: "estandar", // base siempre estándar; las tarjetas muestran los 3 niveles
       recoleccion: formData.recoleccion,
       seguro: formData.seguro,
       dimensiones: (formData.largo && formData.ancho && formData.alto)
@@ -57,11 +73,17 @@ export default function Cotizador() {
     fontFamily: "inherit", boxSizing: "border-box", color: "#2D2D2D",
     backgroundColor: "#ffffff",
   };
-  const labelStyle = { fontSize: "13px", fontWeight: "600", color: "#4A5568", marginBottom: "6px", display: "block" };
-  const sectionTitle = { fontSize: "17px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 20px" };
+  const labelStyle    = { fontSize: "13px", fontWeight: "600", color: "#4A5568", marginBottom: "6px", display: "block" };
+  const sectionTitle  = { fontSize: "17px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 20px" };
 
   return (
     <div style={{ backgroundColor: "#F7F8FA", fontFamily: "'Plus Jakarta Sans', 'Segoe UI', sans-serif" }}>
+
+      {/* Placeholders grises — no se puede hacer con inline styles */}
+      <style>{`
+        .aero-input::placeholder { color: #B0BAC9; font-style: italic; }
+        .aero-input:focus { border-color: #1A3C6E !important; box-shadow: 0 0 0 3px rgba(26,60,110,0.08) !important; }
+      `}</style>
 
       {/* HEADER */}
       <section style={{ background: "linear-gradient(135deg, #1A3C6E 0%, #1e4d8c 60%, #1a5c6e 100%)", padding: isMobile ? "48px 20px" : "72px 24px", color: "#ffffff" }}>
@@ -94,14 +116,13 @@ export default function Cotizador() {
                 </div>
                 <div>
                   <label style={labelStyle}>Ciudad de Origen</label>
-                  <input type="text" placeholder="Ciudad" style={inputStyle} />
+                  <input className="aero-input" type="text" placeholder="Ej. Guatemala" style={inputStyle} />
                 </div>
                 <div>
                   <label style={labelStyle}>Código Postal de Origen</label>
-                  <input type="text" placeholder="01001" style={inputStyle} />
+                  <input className="aero-input" type="text" placeholder="Ej. 01001" style={inputStyle} />
                 </div>
 
-                {/* Arrow divider */}
                 <div style={{ display: "flex", justifyContent: "center", padding: "4px 0" }}>
                   <div style={{ width: "44px", height: "44px", backgroundColor: "#F0FFF7", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2ECC71" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -112,11 +133,11 @@ export default function Cotizador() {
 
                 <div>
                   <label style={labelStyle}>Ciudad de Destino</label>
-                  <input type="text" placeholder="Ciudad" style={inputStyle} />
+                  <input className="aero-input" type="text" placeholder="Ej. Quetzaltenango" style={inputStyle} />
                 </div>
                 <div>
                   <label style={labelStyle}>Código Postal de Destino</label>
-                  <input type="text" placeholder="01002" style={inputStyle} />
+                  <input className="aero-input" type="text" placeholder="Ej. 09001" style={inputStyle} />
                 </div>
               </div>
             </div>
@@ -128,38 +149,90 @@ export default function Cotizador() {
 
                 {/* Dimensiones */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                  {[["largo", "Largo (cm)", "30"], ["ancho", "Ancho (cm)", "20"], ["alto", "Alto (cm)", "10"], ["peso", "Peso (lb) *", "5"]].map(([name, label, ph]) => (
+                  {[["largo", "Largo (cm)", "Ej. 30"], ["ancho", "Ancho (cm)", "Ej. 20"], ["alto", "Alto (cm)", "Ej. 10"]].map(([name, label, ph]) => (
                     <div key={name}>
                       <label style={labelStyle}>{label}</label>
-                      <input type="number" name={name} value={formData[name]} onChange={handleChange}
+                      <input
+                        className="aero-input"
+                        type="number"
+                        onKeyDown={(e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()}
+                        name={name} value={formData[name]} onChange={handleChange}
                         placeholder={ph} min="0" step="0.1"
-                        style={{ ...inputStyle, borderColor: name === "peso" ? "#2ECC71" : "#E2E8F0" }} />
+                        style={inputStyle}
+                      />
                     </div>
                   ))}
                 </div>
 
-                {/* Tipo de paquete */}
-                <div>
-                  <label style={labelStyle}>Tipo de Paquete</label>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-                    {packageTypes.map((t) => (
-                      <button key={t.id} onClick={() => setSelectedPackage(t.id)} style={{
-                        padding: "10px 14px", borderRadius: "8px", fontSize: "13.5px", fontWeight: "500",
-                        border: `1.5px solid ${selectedPackage === t.id ? "#2ECC71" : "#E2E8F0"}`,
-                        backgroundColor: selectedPackage === t.id ? "#F0FFF7" : "#ffffff",
-                        color: selectedPackage === t.id ? "#1A3C6E" : "#4A5568",
-                        cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
-                      }}>{t.label}</button>
-                    ))}
+                {/* Peso — fila separada, rojo solo si intentó cotizar sin llenarlo */}
+                <div style={{ borderTop: "1px solid #EEF2F8", paddingTop: "14px" }}>
+                  <p style={{ fontSize: "12px", color: "#718096", margin: "0 0 10px" }}>
+                    <span style={{ color: "#e53e3e", fontWeight: "700" }}>*</span> Campo obligatorio
+                  </p>
+                  <div style={{ maxWidth: "50%" }}>
+                    <label style={labelStyle}>
+                      Peso (lb) <span style={{ color: "#e53e3e" }}>*</span>
+                    </label>
+                    <input
+                      className="aero-input"
+                      type="number"
+                      onKeyDown={(e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()}
+                      name="peso" value={formData.peso} onChange={handleChange}
+                      placeholder="Ej. 5" min="0" step="0.1"
+                      style={{
+                        ...inputStyle,
+                        borderColor: pesoError ? "#e53e3e" : "#E2E8F0",
+                        boxShadow: pesoError ? "0 0 0 3px rgba(229,62,62,0.1)" : "none",
+                      }}
+                    />
+                    {pesoError && (
+                      <p style={{ fontSize: "12px", color: "#e53e3e", margin: "6px 0 0", fontWeight: "500" }}>
+                        Ingresa el peso para cotizar
+                      </p>
+                    )}
                   </div>
+                </div>
+
+                {/* Tipo de paquete — auto-seleccionado según dimensiones */}
+                <div>
+                  <label style={labelStyle}>
+                    Tipo de Paquete
+                    <span style={{ fontSize: "11px", fontWeight: "400", color: "#A0AEC0", marginLeft: "8px" }}>
+                      (se sugiere según dimensiones)
+                    </span>
+                  </label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                    {packageTypes.map((t, index) => {
+                      const vol = (formData.largo && formData.ancho && formData.alto)
+                        ? Number(formData.largo) * Number(formData.ancho) * Number(formData.alto)
+                        : null;
+                      const minVol = index > 0 ? packageTypes[index - 1].maxVol : 0;
+                      // Deshabilitar si el volumen no cae en el rango de este tipo
+                      const disabled = vol !== null && (vol > t.maxVol || vol <= minVol);
+                      return (
+                        <button key={t.id} onClick={() => !disabled && setSelectedPackage(t.id)} style={{
+                          padding: "10px 14px", borderRadius: "8px", fontSize: "13.5px", fontWeight: "500",
+                          border: `1.5px solid ${selectedPackage === t.id ? "#2ECC71" : "#E2E8F0"}`,
+                          backgroundColor: disabled ? "#F7F8FA" : selectedPackage === t.id ? "#F0FFF7" : "#ffffff",
+                          color: disabled ? "#C0C9D4" : selectedPackage === t.id ? "#1A3C6E" : "#4A5568",
+                          cursor: disabled ? "not-allowed" : "pointer",
+                          fontFamily: "inherit", transition: "all 0.15s",
+                          textDecoration: disabled ? "line-through" : "none",
+                        }}>{t.label}</button>
+                      );
+                    })}
+                  </div>
+                  <p style={{ fontSize: "11px", color: "#A0AEC0", margin: "8px 0 0" }}>
+                    Sobre &lt; 500 cm³ · Caja Pequeña &lt; 5,000 · Caja Mediana &lt; 20,000 · Caja Grande en adelante
+                  </p>
                 </div>
 
                 {/* Nivel de servicio */}
                 <div>
                   <label style={labelStyle}>Nivel de Servicio</label>
                   <select name="nivelServicio" value={formData.nivelServicio} onChange={handleChange} style={inputStyle}>
-                    <option value="estandar">Estándar (3-5 días)</option>
-                    <option value="expres">Exprés (24-48 horas)</option>
+                    <option value="estandar">Estándar</option>
+                    <option value="expres">Exprés</option>
                   </select>
                 </div>
 
@@ -168,8 +241,8 @@ export default function Cotizador() {
                   <label style={labelStyle}>Servicios Adicionales</label>
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                     {[
-                      { name: "seguro", label: "Seguro contra pérdida y accidentes" },
-                      { name: "recoleccion", label: "Recolección a domicilio" },
+                      { name: "seguro",         label: "Seguro contra pérdida y accidentes" },
+                      { name: "recoleccion",    label: "Recolección a domicilio" },
                       { name: "entregaUrgente", label: "Entrega urgente" },
                     ].map((extra) => (
                       <label key={extra.name} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
@@ -179,17 +252,6 @@ export default function Cotizador() {
                       </label>
                     ))}
                   </div>
-                </div>
-
-                {/* Datos de contacto */}
-                <div style={{ borderTop: "1px solid #EEF2F8", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <label style={{ ...labelStyle, color: "#1A3C6E" }}>Datos de Contacto</label>
-                  {[["nombre", "Nombre completo", "text", "Tu nombre"], ["email", "Correo electrónico", "email", "tu@email.com"], ["telefono", "Teléfono", "tel", "+502 1234 5678"]].map(([name, label, type, ph]) => (
-                    <div key={name}>
-                      <label style={labelStyle}>{label}</label>
-                      <input type={type} name={name} value={formData[name]} onChange={handleChange} placeholder={ph} style={inputStyle} />
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
@@ -216,9 +278,9 @@ export default function Cotizador() {
             {/* Option cards */}
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
               {[
-                { label: "Envío Estándar", multiplier: 1, days: "3-5 días", features: ["Seguimiento incluido", "Seguro básico"], recommended: false },
-                { label: "Envío Express", multiplier: 1.6, days: "24-48 horas", features: ["Seguimiento en tiempo real", "Seguro completo", "Notificaciones SMS"], recommended: true },
-                { label: "Envío Premium", multiplier: 2.5, days: "Garantizado 24h", features: ["Prioridad máxima", "Seguro premium", "Soporte dedicado", "Embalaje especial"], recommended: false },
+                { label: "Envío Estándar", multiplier: 1,   days: "3-5 días hábiles",  features: ["Seguimiento incluido", "Seguro básico"], recommended: false },
+                { label: "Envío Exprés",   multiplier: 1.5, days: "24-48 horas",        features: ["Seguimiento en tiempo real", "Seguro completo", "Notificaciones SMS"], recommended: true },
+                { label: "Envío Premium",  multiplier: 2.5, days: "Garantizado 24h",    features: ["Prioridad máxima", "Seguro premium", "Soporte dedicado", "Embalaje especial"], recommended: false },
               ].map((opt) => (
                 <div key={opt.label} style={{
                   backgroundColor: "#ffffff", borderRadius: "14px", padding: "24px",
@@ -254,7 +316,7 @@ export default function Cotizador() {
                     cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
                     backgroundColor: opt.recommended ? "#2ECC71" : "transparent",
                     color: opt.recommended ? "#ffffff" : "#2ECC71",
-                    border: `2px solid #2ECC71`,
+                    border: "2px solid #2ECC71",
                   }}>Seleccionar</button>
                 </div>
               ))}
@@ -262,14 +324,14 @@ export default function Cotizador() {
 
             {/* Cost Breakdown */}
             <div style={{ backgroundColor: "#ffffff", borderRadius: "14px", padding: "28px", border: "1px solid #E2E8F0" }}>
-              <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 20px" }}>Desglose de Costos</h4>
+              <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E", margin: "0 0 20px" }}>Desglose de Costos (base Estándar)</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  ["Costo base", resultado.desglose.base],
-                  ["Costo por distancia", resultado.desglose.distancia],
-                  ["Costo por peso / volumen", resultado.desglose.peso],
+                  ["Costo base",              resultado.desglose.base],
+                  ["Costo por distancia",     resultado.desglose.distancia],
+                  ["Costo por peso / volumen",resultado.desglose.peso],
                   ...(resultado.desglose.recargoServicio > 0 ? [["Recargo Exprés", resultado.desglose.recargoServicio]] : []),
-                  ...(resultado.desglose.extras > 0 ? [["Servicios extra", resultado.desglose.extras]] : []),
+                  ...(resultado.desglose.extras > 0          ? [["Servicios extra", resultado.desglose.extras]]        : []),
                 ].map(([label, val]) => (
                   <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
                     <span style={{ color: "#718096" }}>{label}</span>
@@ -277,7 +339,7 @@ export default function Cotizador() {
                   </div>
                 ))}
                 <div style={{ borderTop: "1px solid #EEF2F8", paddingTop: "12px", display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E" }}>Total</span>
+                  <span style={{ fontSize: "16px", fontWeight: "700", color: "#1A3C6E" }}>Total Estándar</span>
                   <span style={{ fontSize: "22px", fontWeight: "800", color: "#2ECC71" }}>Q{resultado.total.toFixed(2)}</span>
                 </div>
               </div>

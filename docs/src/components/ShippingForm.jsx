@@ -62,7 +62,7 @@ export default function ShippingForm() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     <label style={{ fontWeight: 'bold' }}>Peso físico (Libras):</label>
-                    <input type="number" name="peso" value={formData.peso} onChange={handleChange} required min="0.1" step="0.1" style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }} />
+                    <input type="number" onKeyDown={(e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()} name="peso" value={formData.peso} onChange={handleChange} required min="0.1" step="0.1" style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }} />
                 </div>
 
                 {/* Dimensiones (Opcionales) */}
@@ -70,15 +70,15 @@ export default function ShippingForm() {
                     <legend style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Dimensiones en cm (Opcional)</legend>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         <input
-                            type="number" name="largo" placeholder="Largo" value={formData.largo} onChange={handleChange} min="1"
+                            type="number" onKeyDown={(e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()} name="largo" placeholder="Largo" value={formData.largo} onChange={handleChange} min="1"
                             style={{ flex: '1 1 80px', minWidth: '0', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                         />
                         <input
-                            type="number" name="ancho" placeholder="Ancho" value={formData.ancho} onChange={handleChange} min="1"
+                            type="number" onKeyDown={(e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()} name="ancho" placeholder="Ancho" value={formData.ancho} onChange={handleChange} min="1"
                             style={{ flex: '1 1 80px', minWidth: '0', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                         />
                         <input
-                            type="number" name="alto" placeholder="Alto" value={formData.alto} onChange={handleChange} min="1"
+                            type="number" onKeyDown={(e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()} name="alto" placeholder="Alto" value={formData.alto} onChange={handleChange} min="1"
                             style={{ flex: '1 1 80px', minWidth: '0', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                         />
                     </div>
